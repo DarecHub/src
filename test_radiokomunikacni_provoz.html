@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test znalostí</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f4f8;
+      color: #333;
+    }
+    #quiz-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 25px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
+    .question {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #222;
+    }
+    .answers button {
+      display: block;
+      margin: 10px 0;
+      padding: 14px;
+      width: 100%;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      background: #e7ecf0;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .answers button:hover {
+      background: #d0d7dd;
+      transform: scale(1.01);
+    }
+    .answers button.correct {
+      background-color: #c8e6c9;
+    }
+    .answers button.incorrect {
+      background-color: #ffcdd2;
+    }
+    .feedback {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    #nextBtn {
+      margin-top: 30px;
+      padding: 14px 20px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 10px;
+      background-color: #28a745;
+      color: white;
+      display: none;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    #nextBtn:hover {
+      background-color: #218838;
+    }
+    .menu-link {
+      display: block;
+      margin: 30px auto 0;
+      text-align: center;
+      font-size: 1em;
+      color: #007BFF;
+      text-decoration: none;
+    }
+    .menu2-link {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 12px 24px;
+      font-size: 1em;
+      font-weight: bold;
+      color: white;
+      background-color: #007BFF;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+      text-align: center;
+    }
+    .menu2-link:hover {
+      background-color: #ED4A90;
+    }
+    .menu2-container {
+      text-align: center;
+    }
+    .menu-link:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      #quiz-container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+
+
+</body>
+
+
+  <div id="quiz-container">
+    <div class="question" id="questionText"></div>
+    <div class="answers" id="answerButtons"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="feedback" id="correctCounter">Správné odpovědi: 0</div>
+    <div class="feedback" id="wrongCounter">Špatné odpovědi: 0</div>
+    <button id="nextBtn">Další otázka</button>
+  </div>
+
+  <script>
+    const questions = [
+// radiokomunikační provoz
+  {
+    "question": "Oblast pokrytá signálem alespoň jedné pobřežní VKV (VHF) radiotelefonní stanice, která zabezpečuje nepřetržitou pohotovost pro tísňová volání DSC v systému GMDSS, se označuje jako",
+    "answers": [
+      "námořní oblast B1",
+      "námořní oblast A1",
+      "oblast GMDSS 0"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "RCC (Rescue Coordination Centre) je",
+    "answers": [
+      "lodní operační středisko",
+      "satelitní navigační centrum",
+      "orgán zodpovědný za účinnou organizaci pátracích a záchranných služeb (SAR) a za koordinaci SAR zásahů v dané oblasti"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Zkratka DSC znamená",
+    "answers": [
+      "Digital Selective Calling (digitální selektivní volání), tj. volání prostřednictvím digitálního přenosu signálu a s možností výběru volané stanice nebo stanic",
+      "Direct Signal Channel",
+      "Data Selective Code"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Jsou pro DSC určeny speciální kmitočty?",
+    "answers": [
+      "ne, DSC se používá na jakémkoli kanálu",
+      "ano, kanál č. 16 je vyhrazen pro DSC",
+      "pro DSC je pásmu VKV (VHF) vyhrazen kanál č. 70, na němž je možné komunikovat pouze v rámci standardu DSC, fonický provoz je zablokován"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "K označení identity lodní stanice v rámci DSC provozu se používá",
+    "answers": [
+      "devítimístný číselný kód MMSI (Maritime Mobile Service Identity)",
+      "osmimístný kód IMO",
+      "alfa-numerická značka lodě"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Dá se z MMSI lodní stanice poznat pod jakou vlajkou pluje?",
+    "answers": [
+      "ne, MMSI neobsahuje žádné informace o státu",
+      "ano, poslední čtyři číslice určují stát",
+      "ano, první tři číslice (MID) kódu lodní stanice označují stát, v němž je plavidlo registrováno"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Podle čeho je možné identifikovat MMSI náležející pobřežní stanici?",
+    "answers": [
+      "mají vždy lichý počet číslic",
+      "pobřežní stanice používají devítimístný MMSI kód, v němž se před MID (trojčíslí přidělené státu, z jehož území pobřežní stanice pracuje) předřadí dvě nuly",
+      "používají písmena místo čísel"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Je možné se pomocí DSC spojit s definovanou skupinou lodních stanic?",
+    "answers": [
+      "DSC protokol umožňuje vyslat zprávu skupině lodních stanic na podkladě použití přiděleného skupinového MMSI",
+      "ne, DSC funguje jen individuálně",
+      "jen pokud se stanice nachází ve stejné oblasti A1"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "MID České republiky je",
+    "answers": [
+      "270",
+      "250",
+      "271"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Pro volání skupiny lodních stanic se u MMSI před MID předřazuje",
+    "answers": [
+      "dvě nuly",
+      "tři nuly",
+      "jedna nula"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Funkčnost VKV (VHF) zařízení DSC se ověřuje",
+    "answers": [
+      "každou hodinu přes testovací kanál",
+      "jen komunikací s jinou lodí",
+      "pouze pomocí nabídky „SELF TEST“ jednou za den, „živé“ testování na kanálu 70 s jinou stanicí je zakázáno."
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Jak probíhá potvrzení běžného (rutinního) pomocí DSC?",
+    "answers": [
+      "potvrzení se nevyžaduje",
+      "probíhá jen hlasem po vyslání DSC",
+      "je nutné potvrdit nabídku spojení včetně čísla pracovního kanálu. Po odeslání potvrzení je další komunikace automaticky přepojena na vybraný pracovní kanál."
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Aktivace tlačítka „DISTRESS“ (aktivace DSC volání)",
+    "answers": [
+      "stiskem tlačítka bez krytu",
+      "stlačením tlačítka nepřetržitě po dobu několika sekund, dokud nedojde k odeslání DSC zprávy. Tlačítko je výrazně odlišeno a umístěno pod krytem",
+      "aktivací přes mobilní aplikaci"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Obsah tísňového volání DSC je následující:",
+    "answers": [
+      "identifikační údaj (MMSI), poziční informace, čas UTC a případně povaha tísně",
+      "jméno kapitána, typ plavidla a počet osob",
+      "čas místní, pozice a jméno lodě"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Přednastavený obsah tísňového volání DSC se vysílá",
+    "answers": [
+      "při každém nouzovém volání",
+      "v situaci, kdy není čas na ruční vkládání dalších doplňujících údajů",
+      "pouze během testu spojení"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Způsob vkládání údajů o poloze do tísňového volání DSC",
+    "answers": [
+      "pouze manuálně před vysíláním",
+      "pokud je do radiostanice předepsaným způsobem propojen výstup z přijímače GNSS (např. GPS), je údaj o poloze včetně UTC aktualizován automaticky průběžně, jinak je možné vkládat tyto údaje ručně (dle instrukcí v manuálu stanice).",
+      "automaticky jen při připojení k internetu"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Postup pro nastavení obsahu vysílání tísňového volání DSC",
+    "answers": [
+      "zvolit kanál 70 a zadat polohu",
+      "v nabídce MENU zvolit DISTRESS jako stupeň priority volání, zkontrolovat nebo vložit údaje o poloze včetně odpovídajícího času UTC, případně vložit povahu tísně. Po odeslání se stanice v tísni automaticky přepne na 16. kanál.",
+      "vybrat režim nouze a přepnout na kanál 6"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Opakování tísňového volání DSC",
+    "answers": [
+      "radiostanice opakuje vysílání DSC tísňového volání automaticky vždy po 4 minutách, dokud pobřežní stanice nezruší jeho další vysílání potvrzením příjmu cestou DSC nebo není vysílání zrušeno obsluhou stanice v tísni.",
+      "pouze jednou po 10 minutách",
+      "vůbec se neopakuje"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Proč má příjem tísňového volání DSC přednostně potvrdit pobřežní stanice?",
+    "answers": [
+      "protože má povolení k vysílání tísně",
+      "protože ostatní lodě nemají DSC zařízení",
+      "protože disponuje optimálními technickými a organizačními předpoklady k řízení efektivní záchranné operace. Navíc sama může účinně aktivovat asistenci plavidel v okolí tísňové události včetně letecké podpory."
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Účel tísňového volání DSC pobřežní stanicí typu DISTRESS ALERT RELAY.",
+    "answers": [
+      "zajištění cvičného spojení",
+      "pobřežní stanice takto alarmuje lodě v oblasti tísně z důvodu ověření možnosti jejich operativní součinnosti v místě potřeby a využitelnosti jejich vybavení pro realizaci pomoci, v souladu s přípravou vlastní záchranné akce.",
+      "vysílání informací o počasí"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Jakou použije pobřežní stanice adresu u DSC zprávy DISTRESS ALERT RELAY pro ALL SHIPS?",
+    "answers": [
+      "použije vlastní MMSI",
+      "žádnou, adresa není potřeba",
+      "vygeneruje náhodnou adresu"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Jakou použije pobřežní stanice adresu u DSC zprávy určené pro konkrétní plavidlo (INDIVIDUAL STATION)?",
+    "answers": [
+      "použije číslo oblasti",
+      "použije se MMSI této stanice",
+      "nepoužije žádnou adresu"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "DSC volání DISTRESS ALERT RELAY vyslané pobřežní nebo lodní stanicí všem lodím potvrzují lodní stanice",
+    "answers": [
+      "radiotelefonním provozem na kanálu 16",
+      "DSC zprávou zpět na kanál 70",
+      "vůbec nepotvrzují"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Pilnostní zprávy a DSC",
+    "answers": [
+      "pouze písemně na palubním systému",
+      "přes SMS v GMDSS systému",
+      "pilnostní zprávy se ohlásí pilnostním voláním DSC na kanálu 70, v němž se uvede, na kterém kanálu se bude pilnostní zpráva následně vysílat radiotelefonem"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Potvrzování příjmu pilnostních volání DSC provozem",
+    "answers": [
+      "příjem pilnostních volání DSC avizujících pilnostní zprávu na pracovním kanálu se nepotvrzuje, lodní stanice se pouze přepne na ohlášený radiotelefonní kanál k vyslechnutí obsahu zprávy.",
+      "potvrzuje se zpět přes DSC",
+      "ignoruje se"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Bezpečnostní zprávy a DSC",
+    "answers": [
+      "pouze prostřednictvím e-mailu",
+      "automaticky na všech kanálech",
+      "bezpečnostní zprávy se nejprve ohlásí bezpečnostním voláním DSC na kanálu 70, v němž se uvede, na kterém kanálu se bude bezpečnostní zpráva následně vysílat radiotelefonem"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Potvrzování příjmu bezpečnostních volání DSC provozem",
+    "answers": [
+      "potvrzuje se odesláním vlastního MMSI",
+      "příjem bezpečnostních volání DSC se na kanálu 70 zásadně nepotvrzuje, plavidlo pouze přepne na ohlášený kanál a přijme bezpečnostní zprávu",
+      "stanice pošle potvrzení hlasem na kanál 70"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Pro jaké námořní oblasti GMDSS je určen EPIRB s pracovním kmitočtem 406 MHz systému COSPAS-SARSAT?",
+    "answers": [
+      "pouze oblast A1",
+      "všechny oblasti (A1 – A4)",
+      "pouze oblast A4"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Jaký EPIRB je oficiální součástí systému GMDSS?",
+    "answers": [
+      "EPIRB na frekvenci 300 MHz",
+      "EPIRB s pouze světelným signálem",
+      "EPIRB s pracovní frekvencí 406 MHz pro systém COSPAS-SARSAT, nově varianta s vestavěným GPS a s vysíláním dohledávacího signálu 121,5 MHz"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Jak se aktivuje EPIRB?",
+    "answers": [
+      "jen pomocí dálkového ovladače",
+      "pouze signálem z GPS",
+      "aktivuje se manuálně nebo automaticky (pokud je vybaven hydrostatickou pojistkou) po vynoření se z hloubky 4 m, v níž se při potápění lodě automaticky uvolní z držáku"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Co jsou NON-SOLAS lodě?",
+    "answers": [
+      "jsou to lodě, na něž se nevztahuje úmluva SOLAS, tzn. lodě, které nejsou určeny pro přepravu více než 12 cestujících (passenger ship) a nákladní lodě s prostorností menší než 300 tun (patří sem i malá sportovní a rekreační plavidla)",
+      "lodě plující mimo EU",
+      "vojenské lodě s výjimkou posádek"
+    ],
+    "correct": 0
+  },
+    {
+    "question": "Při použití mezinárodní hláskovací abecedy se znak „@“ (tzv. zavináč) vyjádří výrazem:",
+    "answers": [
+      "ALPHA-TANGO",
+      "AT",
+      "AMPERSAND"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "PTT je označení tlačítka, jehož stisknutím u zapnuté radiostanice dojde",
+    "answers": [
+      "k přepnutí na nouzový kanál",
+      "k umožnění vysílání řeči",
+      "k ukončení příjmu"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Správná zkratka pro „Mezinárodní námořní organizace“",
+    "answers": [
+      "INA",
+      "IMO",
+      "MIO"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Správná zkratka pro „mezinárodní Úmluva o bezpečnosti lidského života na moři“",
+    "answers": [
+      "SAR",
+      "SOLAS",
+      "GMDSS"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Správná zkratka pro „odpovídač pro účely pátrání a záchrany“",
+    "answers": [
+      "SARTR",
+      "SART",
+      "RSEP"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Správná zkratka pro „koordinovaný světový čas“",
+    "answers": [
+      "GTM",
+      "UTC",
+      "CUT"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Jaký standardní výraz použijete, pokud ve Vámi vysílané zprávě uděláte chybu a potřebujete ji opravit?",
+    "answers": [
+      "CORRECTION",
+      "CHANGE",
+      "AGAIN"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Co znamená standardní výraz I SPELL?",
+    "answers": [
+      "budu hláskovat pomocí mezinárodní hláskovací abecedy",
+      "začnu znovu zprávu",
+      "zprávu zopakuji foneticky"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Co znamená výraz SAY AGAIN?",
+    "answers": [
+      "opakujte s důrazem",
+      "pokračujte dále",
+      "opakujte (zprávu nebo její část, které jsem nerozuměl)"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "V jaké situaci použijete výraz I REPEAT?",
+    "answers": [
+      "zdůraznění – opakuji část zprávy, která je důležitá",
+      "zavolání nové stanice",
+      "zahájení spojení"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Jaký standardní výraz použijete při žádosti o kontrolu signálu?",
+    "answers": [
+      "SIGNAL CALL",
+      "RADIO CHECK",
+      "TEST CALL"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Správná zkratka pro „identifikační číslo námořní pohyblivé služby",
+    "answers": [
+      "IMSI",
+      "MID",
+      "MMSI"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Správná zkratka pro „rádiová bóje označující místo katastrofy“",
+    "answers": [
+      "SART",
+      "EPIRB",
+      "BEACON"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Výraz „RIJEKA RADIO“ znamená",
+    "answers": [
+      "kód pro nouzové vysílání",
+      "volací značka pobřežní stanice RIJEKA",
+      "označení jachty"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Výraz „CALLSIGN“ znamená",
+    "answers": [
+      "volací značka",
+      "radiový kanál",
+      "komunikační typ"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Výraz „ROGER“ znamená",
+    "answers": [
+      "„rozumím“ (při odpovědi na příkaz)",
+      "opakujte",
+      "přepínám"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Výraz „LATITUDE“ znamená",
+    "answers": [
+      "zeměpisná délka",
+      "zeměpisná šířka",
+      "nadmořská výška"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Výraz „LONGITUDE“ znamená",
+    "answers": [
+      "zeměpisná šířka",
+      "zeměpisná délka",
+      "délka v metrech"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Výraz „DEGREE“ znamená",
+    "answers": [
+      "směr",
+      "úhel",
+      "stupeň"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Zprávy NAVTEX na kmitočtu 518 kHz jsou vysílány v jazyce",
+    "answers": [
+      "německém",
+      "francouzském",
+      "anglickém"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Dosah stanice systému NAVTEX na kmitočtu 518 kHz činí",
+    "answers": [
+      "200–400 NM",
+      "50–100 NM",
+      "500–1000 NM"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Přesnost určení místa katastrofy z vysílání EPIRBu 406 MHz (bez integrovaného GNSS přijímače) činí zhruba",
+    "answers": [
+      "50 m",
+      "20 km",
+      "5 km"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "EPIRB 406 MHz se aktivuje manuálně nebo",
+    "answers": [
+      "po stisku tlačítka SOS",
+      "při detekci pádu do vody",
+      "automaticky pomocí hydrostatické pojistky (pokud je instalována), když se loď potápí"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "SART 9 GHz slouží k",
+    "answers": [
+      "lokalizaci (finálnímu vyhledání) trosečníků na místě katastrofy",
+      "navigaci v mlze",
+      "měření vzdálenosti mezi plavidly"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Jak může být zvětšen dosah transpondéru SART?",
+    "answers": [
+      "ponořením pod hladinu",
+      "uchycením na záchranném člunu",
+      "SART by měl být umístěn co nejvýše a ve vertikální poloze"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Tísňové volání DISTRESS ALERT vyslané omylem z EPIRBu v teritoriálních vodách zrušíme",
+    "answers": [
+      "přepnutím EPIRBu do režimu STANDBY",
+      "zasláním DSC zprávy typu CANCEL",
+      "na kanálu 16 doporučenou radiotelefonní formulací “Please, cancel my distress alert of (time UTC)”"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Průkaz SRC opravňuje k obsluze zařízení pro kmitočty",
+    "answers": [
+      "VKV i KV",
+      "všechny dostupné frekvence",
+      "pouze VKV (VHF)"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Přeložte do češtiny (pište čitelně, čísla nepište slovy, ale číslicemi):- Mayday, this is motor boat Aida, position 36 degrees 55.4 minutes north, 011 degrees 38.2 minutes west, at 0517 UTC collision with an unknown drifting object, immediate assistance required, five persons on board, boat seriously damaged,over.",
+    "answers": [
+      "Mayday, tady je motorový člun Aida, na pozici 36 stupňů, 55 celých 4 minut severní šířky a 011 stupňů, 38 celých 2 minut západní délky, v čase 05:17 UTC srážka s neznámým plovoucím objektem, žádáme okamžitou pomoc, pět osob na palubě, člun je vážně poškozený, přepínám.",
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Simplexní provoz je způsob provozu rádiové stanice, který",
+    "answers": [
+      "umožňuje simultánní vysílání i příjem",
+      "umožňuje přenos zpráv na jednom rádiovém kanálu střídavě v obou směrech, např. pomocí ručního přepínání (příjem/vysílání), přičemž během vysílání zpráv není možný současný příjem zpráv",
+      "používá pouze digitální kódování"
+    ],
+    "correct": 1
+  },
+
+{
+    "question": "Přeložte do češtiny (piště čitelně, čísla nepište slovy, ale číslicemi): - Mayday, yacht Marbello, position exactly north of Cap Gris Nez Lighthouse five nautical miles, crew member has fallen from mast and is badly  njured, immediate medical assistance required",
+    "answers": ["Mayday, jachta Marbello, pozice přesně na sever od majáku Cap Gris Nez 5 NM, člen posádky spadl ze stěžně a je vážně zraněn, žádáme okamžitou lékařskou pomoc",
+],
+    "correct": 0
+  },
+
+
+{
+    "question": "Přeložte do češtiny (piště čitelně, čísla nepište slovy, ale číslicemi): - All stations, this is Belfast Coast Guard. New gale warning issued at 0935 UTC for sea area Hebrides. Gale force 8 with heavy rain expected soon.",
+
+"answers": [
+      "Všem stanicím, tady je pobřežní stráž Belfast. Nové varování před bouří, vydané v čase 09:35 UTC pro oblast Hebridy. Bouřlivý vítr síly 8 se silným deštěm očekáván brzy.",
+],
+    "correct": 0
+  },
+
+{
+    "question": "Sestavte tísňovou zprávu v angličtině (piště čitelně, čísla nepište slovy, ale číslicemi): - Motorová jachta Hermes, na pozici 50° 24.5' N 01° 23.3' W, loď hoří. 4 osoby, chystáte se opustit loď v záchranném ostrůvku.",
+
+"answers": [
+      "Mayday, this is motor yacht Hermes, position 50 degrees 24 point 5 minutes north, 01 degrees 23 point 3 minutes west. Boat on fire. Require immediate assistance. 4 persons on board, abandoning to liferaft. Over.",
+],
+    "correct": 0
+  },
+{
+    "question": "Sestavte tísňovou zprávu v angličtině (piště čitelně, čísla nepište slovy, ale číslicemi): - Plachetnice Tango, na pozici0 (náměr) 255° od majáku ostrova Brijuni, vzdálenost 2 NM. Loď najela na skálu a potápí se. Na palubě jste 4, z toho 2 děti. Střílíte červené padáčkové světlice.",
+
+"answers": [
+      "Mayday, sailing yacht Tango. Position 255 degrees from Brijuni island lighthouse, 2 nautical miles. Grounded rock and sinking. Require immediate assistance. 4 persons on board, including 2 children. Firing red parachute rockets. Over.",
+],
+    "correct": 0
+  },
+{
+    "question": "Sestavte tísňovou zprávu v angličtině (piště čitelně, čísla nepište slovy, ale číslicemi): - Plachetnice Adria, na pozici 06º 24.3' N 42º 36.7' W. Ztratili jste člena posádky, naštěstí měl záchrannou vestu. Naposledy jste ho viděli v 03:25 místního času. Na lodi jste zbyli 3, po člověku ve vodě stále pátráme.",
+
+"answers": [
+      "Mayday, yacht Adria. Position 06º 24.3' N 42º 36.7' W. Man overboard. Require immediate assistance. 3 persons on board. Person in water wearing lifejacket. We keep searching. Over.",
+],
+    "correct": 0
+  },
+  {
+    "question": "Duplexní provoz je způsob provozu rádiové stanice, který",
+    "answers": [
+      "umožňuje současný přenos zpráv oběma směry a vyžaduje současné využívání dvou kmitočtů",
+      "přepíná automaticky mezi frekvencemi",
+      "používá jen jeden kanál"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Jste na jachtě Sirius, potřebujete zavolat do mariny Rijeka. Jaký je správný postup navázání spojení?",
+    "answers": [
+      "Sirius calling Rijeka marina, over",
+      "Hello Rijeka marina, this is Sirius",
+      "Rijeka marina, Rijeka marina, Rijeka marina, this is yacht Sirius, Sirius, Sirius, over"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Jste na lodi jménem “ADRIA”, slyšíte volání adresované vám, ale nerozumíte jméno stanice, která vás volá. Jak správně odpovíte?",
+    "answers": [
+      "Unknown station, please repeat, this is Adria",
+      "Station calling Adria, this is Adria, over.",
+      "Adria here, please speak again"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Jaký standardní výraz použije stanice kontrolující tísňový provoz pro vyhlášení rádiového klidu?",
+    "answers": [
+      "SEELONCE MAYDAY",
+      "MAYDAY STOP",
+      "SILENCE RADIO"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Co znamená standardní výraz SEELONCE FINI?",
+    "answers": [
+      "ukončení rádiového klidu",
+      "MAYDAY STOP",
+      "SILENCE RADIO"
+    ],
+    "correct": 0
+  },
+];
+
+    // Zamíchat otázky (Fisher-Yates algoritmus)
+    for (let i = questions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+
+    let currentQuestion = 0;
+
+    const questionText = document.getElementById('questionText');
+    const answerButtons = document.getElementById('answerButtons');
+    const feedback = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      questionText.textContent = q.question;
+      answerButtons.innerHTML = '';
+      feedback.textContent = '';
+      nextBtn.style.display = 'none';
+
+      q.answers.forEach((answer, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = answer;
+        btn.onclick = () => checkAnswer(index);
+        answerButtons.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(index) {
+      const q = questions[currentQuestion];
+      if (index === q.correct) {
+        feedback.textContent = "Správně!";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = `Špatně. Správná odpověď: ${q.answers[q.correct]}`;
+        feedback.style.color = "red";
+      }
+      nextBtn.style.display = 'inline-block';
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion();
+      } else {
+        questionText.textContent = "Test dokončen!";
+        answerButtons.innerHTML = '';
+        feedback.textContent = '';
+        nextBtn.style.display = 'none';
+      }
+    });
+
+    let correctCount = 0;
+let wrongCount = 0;
+
+function updateCounters() {
+  document.getElementById("correctCounter").textContent = `Správné odpovědi: ${correctCount}`;
+  document.getElementById("wrongCounter").textContent = `Špatné odpovědi: ${wrongCount}`;
+}
+
+function checkAnswer(index) {
+  const q = questions[currentQuestion];
+  if (index === q.correct) {
+    feedback.textContent = "Správně!";
+    feedback.style.color = "green";
+    correctCount++;
+  } else {
+    feedback.textContent = `Špatně. Správná odpověď: ${q.answers[q.correct]}`;
+    feedback.style.color = "red";
+    wrongCount++;
+  }
+  updateCounters();
+  nextBtn.style.display = 'inline-block';
+}
+
+updateCounters(); // Inicializace počítadel při načtení
+
+// Spustit test
+    showQuestion();
+  </script>
+
+</body>
+<body>
+
+  <div class="menu2-container">
+    <a class="menu2-link" href="index.html">← Zpět na SRC menu</a>
+  </div>
+
+</body>
+</html>

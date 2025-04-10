@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test znalostí</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f4f8;
+      color: #333;
+    }
+    #quiz-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 25px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
+    .question {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #222;
+    }
+    .answers button {
+      display: block;
+      margin: 10px 0;
+      padding: 14px;
+      width: 100%;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      background: #e7ecf0;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .answers button:hover {
+      background: #d0d7dd;
+      transform: scale(1.01);
+    }
+    .answers button.correct {
+      background-color: #c8e6c9;
+    }
+    .answers button.incorrect {
+      background-color: #ffcdd2;
+    }
+    .feedback {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    #nextBtn {
+      margin-top: 30px;
+      padding: 14px 20px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 10px;
+      background-color: #28a745;
+      color: white;
+      display: none;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    #nextBtn:hover {
+      background-color: #218838;
+    }
+    .menu-link {
+      display: block;
+      margin: 30px auto 0;
+      text-align: center;
+      font-size: 1em;
+      color: #007BFF;
+      text-decoration: none;
+    }
+    .menu2-link {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 12px 24px;
+      font-size: 1em;
+      font-weight: bold;
+      color: white;
+      background-color: #007BFF;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+      text-align: center;
+    }
+    .menu2-link:hover {
+      background-color: #ED4A90;
+    }
+    .menu2-container {
+      text-align: center;
+    }
+    .menu-link:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      #quiz-container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+
+
+</body>
+
+
+  <div id="quiz-container">
+    <div class="question" id="questionText"></div>
+    <div class="answers" id="answerButtons"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="feedback" id="correctCounter">Správné odpovědi: 0</div>
+    <div class="feedback" id="wrongCounter">Špatné odpovědi: 0</div>
+    <button id="nextBtn">Další otázka</button>
+  </div>
+
+  <script>
+    const questions = [
+  // elektrotechnika a radiotechnika
+  {
+    "question": "Paralelně řazené akumulátory",
+    "answers": [
+      "umožňují dodávat větší proud",
+      "zvyšují napětí článků",
+      "snižují životnost článků"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Sériově řazené akumulátory",
+    "answers": [
+      "zvyšují kapacitu",
+      "se zapojují pro zvýšení dodávaného napětí",
+      "snižují proud"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Jmenovité napětí článku olověného akumulátoru je",
+    "answers": [
+      "2 V",
+      "1,5 V",
+      "1,2 V"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Jmenovité napětí článku alkalického akumulátoru je",
+    "answers": [
+      "1,5 V",
+      "1,2 V",
+      "2 V"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Jmenovité napětí suchého galvanického článku je",
+    "answers": [
+      "1,2 V",
+      "2 V",
+      "1,5 V"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Suché galvanické články",
+    "answers": [
+      "jsou opakovaně nabíjecí",
+      "lze nabíjet pouze jednou",
+      "nelze dobíjet"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Antény dělíme podle směru vysílání nebo příjmu na",
+    "answers": [
+      "vnitřní a venkovní",
+      "krátké a dlouhé",
+      "směrové a všesměrové"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Všesměrová anténa má vyzařovací charakteristiku",
+    "answers": [
+      "pásovou",
+      "kruhovou",
+      "osmičkovou"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Všesměrová anténa musí přijímat nebo vysílat stejně všemi směry",
+    "answers": [
+      "v radiálním úhlu",
+      "v diagonálním směru",
+      "v horizontální rovině"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Půlvlnný dipól",
+    "answers": [
+      "je vždy směrový",
+      "může být směrová i všesměrová anténa, záleží na jeho orientaci k zemskému povrchu",
+      "je použitelný jen na VKV"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Půlvlnný dipól umístěný rovnoběžně se zemským povrchem",
+    "answers": [
+      "má v horizontální rovině osmičkovou vyzařovací charakteristiku",
+      "vysílá pouze svisle",
+      "nevysílá ve směru antény"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Vztah mezi délkou vlny (λ) a kmitočtem (f), když c je rychlost světla, je",
+    "answers": [
+      "f = λ * c",
+      "f = c^2 / λ",
+      "f = c / λ"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Ampérmetr a voltmetr se při měření zařazují",
+    "answers": [
+      "oba do série",
+      "ampérmetr do série se spotřebičem, voltmetr paralelně ke spotřebiči",
+      "oba paralelně"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "V suchém, bezprašném prostředí ... považujeme za bezpečná napětí",
+    "answers": [
+      "stejnosměrné do 60 V a střídavé do 25 V",
+      "střídavé do 60 V a stejnosměrné do 25 V",
+      "do 12 V pro oba druhy napětí"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Při úrazu elektrickým proudem",
+    "answers": [
+      "okamžitě zahájíme dýchání bez kontroly",
+      "čekáme na odborníka",
+      "vyprostíme postiženého..., zavoláme záchrannou službu..."
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Funkce „SQUELCH“ VKV (VHF) radiostanice je určena",
+    "answers": [
+      "ke zvýšení hlasitosti",
+      "k ladění signálu",
+      "k potlačení slabších rušivých signálů včetně vlastního šumu přijímače."
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Údaj elektrické napětí 2 V lze také zapsat",
+    "answers": [
+      "0,2 mV",
+      "2000 mV",
+      "20 mV"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Kmitočet 406 MHz lze také zapsat",
+    "answers": [
+      "0,406 GHz",
+      "4,06 GHz",
+      "4060 kHz"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Délka rádiové vlny v pásmu 160 MHz (VKV/VHF) je",
+    "answers": [
+      "cca. 20 m",
+      "cca. 2 m",
+      "cca. 0,2 m"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Vztah mezi napětím (U), proudem (I) a odporem (R) je:",
+    "answers": [
+      "U = I/R",
+      "U = R*I",
+      "U = R/I"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Vztah mezi výkonem (P), napětím (U) a proudem (I) je:",
+    "answers": [
+      "P = U/I",
+      "P = U*I",
+      "P = I/U"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Radiostanice odebírající z baterie 12 V proud 500 mA má příkon",
+    "answers": [
+      "60 W",
+      "0,6 W",
+      "6 W"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Tři dobré vodiče elektřiny jsou",
+    "answers": [
+      "měď, zlato, stříbro",
+      "hliník, sklo, voda",
+      "uhlík, plast, železo"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Čtyři dobré izolanty jsou",
+    "answers": [
+      "měď, zlato, železo, voda",
+      "sklo, vzduch, plast, porcelán",
+      "uhlík, papír, voda, guma"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Ke zdroji 10 V jsou připojeny dva odpory 10 Ω zapojené do série. Odebíraný příkon činí:",
+    "answers": [
+      "10 W",
+      "5 W",
+      "1 W"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Radiotechnická součástka je identifikována jako kondenzátor, pokud se její hodnota měří v",
+    "answers": [
+      "kΩ",
+      "pF",
+      "V"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Výstupním výkonem stanice se rozumí",
+    "answers": [
+      "celkový výkon baterie",
+      "výkon koncového stupně vysílače dodávaný do napaječe anténního systému",
+      "maximální výkon reproduktoru"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Jaký je přibližně dosah mezi dvěma plachetnicemi...",
+    "answers": [
+      "5 až 10 NM",
+      "asi 16 až 24 NM",
+      "50 až 80 NM"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Co umožňuje na radiostanici funkce DUAL WATCH?",
+    "answers": [
+      "přepínání mezi třemi kanály",
+      "automatické volání",
+      "souběžně monitorovat kanál 16 plus jeden další vybraný kanál"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Je možné vysílat bez antény?",
+    "answers": [
+      "ne, hrozí poškození radiostanice",
+      "ano, ale s omezením výkonu",
+      "ano, při použití GPS"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Kterou vlastnost antény ovlivní náklon lodě?",
+    "answers": [
+      "dosah",
+      "barvu",
+      "napětí"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Co NENÍ možné dělat, když máme stisknuté tlačítko pro vysílání (PTT)?",
+    "answers": [
+      "přijímat jiné vysílání",
+      "přijímat polohu",
+      "zvýšit výkon"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "V jakých typech DSC volání je zahrnutá pozice a čas?",
+    "answers": [
+      "pouze v tísňovém DSC alarmu (DISTRESS)",
+      "ve všech",
+      "pouze ve skupinových"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Jaká je minimální životnost baterie v radiobóji EPIRB při vysílání?",
+    "answers": [
+      "12 hodin",
+      "96 hodin",
+      "48 hodin"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "Co z uvedeného NENÍ součástí radiobóje EPIRB?",
+    "answers": [
+      "vysílač",
+      "mikrofon",
+      "anténa"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "K čemu je v pásmu VHF určený kanál 70?",
+    "answers": [
+      "pro zábavní vysílání",
+      "pro meteorologické zprávy",
+      "slouží výhradně pro spojení mezi DSC kontroléry, hlasové volání je zakázáno"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "V jakém kmitočtovém pásmu pracuje lodní VHF radiostanice?",
+    "answers": [
+      "156–162 MHz",
+      "100–110 MHz",
+      "300–350 MHz"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Jakým způsobem se šíří rádiové vlny v pásmu VHF (VKV)?",
+    "answers": [
+      "šíří se přímočaře, neohýbají se podél zemského povrchu ani přes překážky",
+      "šíří se pod zemí",
+      "odrážejí se jako KV"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Na čem závisí délka antény v pásmu VHF?",
+    "answers": [
+      "na vlnové délce",
+      "na barvě kabelu",
+      "na výkonu rádia"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Jak zvýšíme dosah antény v pásmu VHF (VKV)?",
+    "answers": [
+      "umístíme anténu co nejvýše",
+      "přiblížíme ji ke stěžni",
+      "použijeme kratší kabel"
+    ],
+    "correct": 0
+  }
+];
+
+    // Zamíchat otázky (Fisher-Yates algoritmus)
+    for (let i = questions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+
+    let currentQuestion = 0;
+
+    const questionText = document.getElementById('questionText');
+    const answerButtons = document.getElementById('answerButtons');
+    const feedback = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      questionText.textContent = q.question;
+      answerButtons.innerHTML = '';
+      feedback.textContent = '';
+      nextBtn.style.display = 'none';
+
+      q.answers.forEach((answer, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = answer;
+        btn.onclick = () => checkAnswer(index);
+        answerButtons.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(index) {
+      const q = questions[currentQuestion];
+      if (index === q.correct) {
+        feedback.textContent = "Správně!";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = `Špatně. Správná odpověď: ${q.answers[q.correct]}`;
+        feedback.style.color = "red";
+      }
+      nextBtn.style.display = 'inline-block';
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion();
+      } else {
+        questionText.textContent = "Test dokončen!";
+        answerButtons.innerHTML = '';
+        feedback.textContent = '';
+        nextBtn.style.display = 'none';
+      }
+    });
+
+    let correctCount = 0;
+let wrongCount = 0;
+
+function updateCounters() {
+  document.getElementById("correctCounter").textContent = `Správné odpovědi: ${correctCount}`;
+  document.getElementById("wrongCounter").textContent = `Špatné odpovědi: ${wrongCount}`;
+}
+
+function checkAnswer(index) {
+  const q = questions[currentQuestion];
+  if (index === q.correct) {
+    feedback.textContent = "Správně!";
+    feedback.style.color = "green";
+    correctCount++;
+  } else {
+    feedback.textContent = `Špatně. Správná odpověď: ${q.answers[q.correct]}`;
+    feedback.style.color = "red";
+    wrongCount++;
+  }
+  updateCounters();
+  nextBtn.style.display = 'inline-block';
+}
+
+updateCounters(); // Inicializace počítadel při načtení
+
+// Spustit test
+    showQuestion();
+  </script>
+
+</body>
+<body>
+
+  <div class="menu2-container">
+    <a class="menu2-link" href="index.html">← Zpět na SRC menu</a>
+  </div>
+
+</body>
+</html>
